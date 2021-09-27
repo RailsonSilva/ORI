@@ -4,8 +4,11 @@
 
 from os import close
 import nltk
+import sys
 
-arq = open("base.txt")
+if __name__ == "__main__":
+    print("OK")
+arq = open(sys.argv[1])
 linhas = arq.readlines() #le o arquivo e armazena as linhas
 
 arquivos = {}
@@ -19,23 +22,15 @@ for linha in linhas:
 
 arq.close() # fecha arquio base.txt
 
-str1_arq = open(arquivos[0]) 
-str1 = str1_arq.readlines()
-str1 = "".join(str1)
-str1 = str1.lower()
-str1_arq.close() #fecha arquio a.txt
-
-str2_arq = open(arquivos[1])
-str2 = str2_arq.readlines()
-str2 = "".join(str2)
-str2 = str2.lower()
-str2_arq.close() #fecha arquio b.txt
-
-str3_arq = open(arquivos[2])
-str3 = str3_arq.readlines()
-str3 = "".join(str3)
-str3 = str3.lower()
-str3_arq.close() #fecha arquio c.txt
+str_arquivo = {}
+i = 0
+while i < len(linhas):
+    str_arq = open(arquivos[i])
+    str_arquivo[i] = str_arq.readlines()
+    str_arquivo[i] = "".join(str_arquivo[i])
+    str_arquivo[i] = str_arquivo[i].lower()
+    str_arq.close()
+    i = i + 1
 
 def limpaTexto(texto): # tira a pontuação e cria uma nova lista
     str = list(texto) #transforma para lista
@@ -60,52 +55,63 @@ def contaCaracteres(texto):
             freqs[c] = freqs[c] + 1
     return freqs
 
-str1_filtrada = limpaTexto(str1) #chama função para limpar texto e retirar as stopwords
-str2_filtrada = limpaTexto(str2)
-str3_filtrada = limpaTexto(str3)
+str_arquivo_filtrado = {}
+i = 0
+while i < len(linhas):
+    str_arquivo_filtrado[i] = limpaTexto(str_arquivo[i])
+    i = i + 1
 
 palavras = set()
 #adicionar todas as palavras em um conjunto
-for c in str1_filtrada: 
-    if c not in palavras:
-        palavras.add(c)
-for c in str3_filtrada:
-    if c not in palavras:
-        palavras.add(c)
-for c in str2_filtrada:
-    if c not in palavras:
-        palavras.add(c)
+
+i = 0
+while i < len(linhas):
+    for c in str_arquivo_filtrado[i]:
+        if c not in palavras:
+            palavras.add(c)
+    i = i + 1
+
 palavras = sorted(palavras) # deixa o conjunto em ordem alfabética(ascii)
 
 indice = {}
-indice[1] = contaCaracteres(str1_filtrada) #faz a contagem de vezes que a palavra apareceu na frase
-indice[2] = contaCaracteres(str2_filtrada)
-indice[3] = contaCaracteres(str3_filtrada)
+i = 0
+while i < len(linhas):
+    indice[i + 1] = contaCaracteres(str_arquivo_filtrado[i]) #faz a contagem de vezes que a palavra apareceu na frase
+    i = i + 1
 
+indice_a = set()
+indice_a_dict = dict()
 indice1 = set()
 indice2 = set()
 indice3 = set()
 
-palavras_indice = dict()
+
 arquivo = open("indice.txt", "w") #cria arquivo indice.txt
 for c in palavras: #for na lista das palavras criada em ordem ascii
     i = 1 #contador de indíce do dicionário
     arquivo.write("{}: " .format(c)) #imprime palavra que está sendo analisada
     while i <= len(indice): 
+        print("---------------------------------------")
+        print("palavra: {}" .format(c))
+        print("indice = {}" .format(i))
+        print(indice[i])
         if c in indice[i]: # se a palavra existe no indice imprime qual o indice e quantas vezes apareceu
             arquivo.write("{},{} " .format(i, indice[i][c]))
-            if i == 1:
-                indice1.add(c) #armazena as palavras que estão no indice invertido informado
-            if i == 2:
-                indice2.add(c)
-            if i == 3:
-                indice3.add(c)
+            indice_a.add(c)
+            print("TEM")
+            indice_a_dict[i] = set(indice_a)
+        print("---------------------------------------")
         i+=1
     arquivo.write("\n")# adiciona ENTER após concluir uma palavra
 arquivo.close() #fecha arquivo indice.txt
-# Indice invertido ---------------------------------------
+# Indice invertido --------------------------------------
+print(indice_a_dict)  
+print("---------------------------------------")
+print(indice)
+print("---------------------------------------")
+print(palavras)
 
-consulta = open("consulta.txt") # lê o arquivo 
+consulta = open(sys.argv[2]) # lê o arquivo 
 consulta_read = consulta.readline() #lê a linha do arquivo
 consulta_read = consulta_read.lower()
 consulta_read_filter = consulta_read.split() # separa a frase por palavra
