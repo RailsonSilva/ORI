@@ -18,7 +18,7 @@ print("\n\n\n===========================")
 stemmer = nltk.stem.RSLPStemmer()
 print(stemmer.stem("professora")) #retorna radical de professora - profes
 print(stemmer.stem("luminosidade")) #retorna radoical de luminosidade
-
+print(stemmer.stem("favor"))
 print("\n\n\n===========================")
 
 # from nltk.corpus import mac_morpho

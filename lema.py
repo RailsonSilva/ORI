@@ -21,3 +21,16 @@ for sent in nlp(frase).sentences:
 print("text: ", text)
 print("pos : ", pos)
 print("lemma: ", lemma)
+
+frase = "O  rato roeu a roupa do rei de roma"
+text = pos = lemma = ""
+for sent in nlp(frase).sentences:
+
+    for word in sent.words:
+        text += word.text + '\t'
+        pos += word.upos + '\t'
+        lemma += word.lemma + '\t'
+
+print("text: ", text)
+print("pos : ", pos)
+print("lemma: ", lemma)

@@ -1,6 +1,7 @@
 # RAILSON DA SILVA MARTINS
 # 11811BSI208
-# CONCLUIDO DIA 10/09 
+# CONCLUIDO DIA 27/09 
+
 
 from os import close
 import nltk
@@ -32,11 +33,20 @@ if __name__ == "__main__":
         i = i + 1
 
     def limpaTexto(texto): # tira a pontuação e cria uma nova lista
-        str = list(texto) #transforma para lista
-        texto_filtrado = [p for p in str if p not in ("!", ".", ",", "?", "...")] #cria uma nova lista sem a pontuação
-        texto_filtrado = "".join(texto_filtrado) #transforma novamente para string
-        texto_filtrado = texto_filtrado.split() #transforma em uma lista de strings
+        texto_filtrado_stopwords = []
+        texto_filtrado_token = nltk.word_tokenize(texto)
+        texto_filtrado = [p for p in texto_filtrado_token if p not in ("!", ".", ",", "?", "...")] #cria uma nova lista sem a pontuação
         texto_filtrado = [i for i in texto_filtrado if i not in nltk.corpus.stopwords.words("portuguese")]
+        sentencas_etiquetadas = nltk.corpus.mac_morpho.tagged_sents()
+        etiquetador_unigram = nltk.tag.UnigramTagger(sentencas_etiquetadas)
+        classificação = etiquetador_unigram.tag(texto_filtrado)
+        i = 0 
+        while i < len(classificação):
+            if classificação[i][1] not in ("PREP", "KC", "KS", "ART"):
+                texto_filtrado_stopwords.append(classificação[i][0])
+            i = i + 1
+
+        texto_filtrado = texto_filtrado_stopwords
         stemmer = nltk.stem.RSLPStemmer()
         i = 0
         while i < len(texto_filtrado):
@@ -78,29 +88,30 @@ if __name__ == "__main__":
         indice[i + 1] = contaCaracteres(str_arquivo_filtrado[i]) #faz a contagem de vezes que a palavra apareceu na frase
         i = i + 1
 
-
+    indice_invert = dict()
     indice_a_dict = dict()
     indice1 = set()
     indice2 = set()
     indice3 = set()
 
-
+    j = 0
     arquivo = open("indice.txt", "w") #cria arquivo indice.txt
     for c in palavras: #for na lista das palavras criada em ordem ascii
+        indice_invertido = []
         i = 1 #contador de indíce do dicionário
         arquivo.write("{}: " .format(c)) #imprime palavra que está sendo analisada
         while i <= len(indice): 
             if c in indice[i]: # se a palavra existe no indice imprime qual o indice e quantas vezes apareceu
                 
                 arquivo.write("{},{} " .format(i, indice[i][c]))
+                indice_invertido.append((i, indice[i][c]))
             i = i + 1
-            
+        indice_invert[c] = indice_invertido
+        j = j + 1
         arquivo.write("\n")# adiciona ENTER após concluir uma palavra
     arquivo.close() #fecha arquivo indice.txt
     # Indice invertido --------------------------------------
-
-    #fazer para verificar indice por indice, depois palavra
-
+    print(indice_invert['cas'][1][1]) # quantidade de vezes que a palavra "cas" apareceu no documento 2
     i = 1
     while i <= len(indice):
         indice_a = set()
@@ -215,4 +226,4 @@ if __name__ == "__main__":
         arquivo_resposta.write("\n")# adiciona ENTER
     arquivo_resposta.close() #fecha arquivo resposta.txt
 else:
-    print("Programa não está sendo executa como principal!")
+    print("Programa não está sendo executado como principal!")
