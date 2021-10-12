@@ -5,7 +5,7 @@ print(nomemin)
 nome = "              jessica   gomes\t\n   "
 print(nome)
 nome1 = nome.strip() # retorna uma cópia da string sem espaços na frente e atrás
-print(nome1)
+print(nome1, "aqui")
 
 frase = "quem casa quer casa"
 print(frase)
